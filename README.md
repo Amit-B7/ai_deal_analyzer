@@ -1,126 +1,173 @@
-﻿# 🤖 AI Business Intelligence Agent
+<div align="center">
 
-An autonomous, multi-agent AI system that researches any company and determines whether it is a strong prospect for AI automation solutions — producing a structured, confidence-scored decision report.
+# 🤖 AI Business Intelligence Agent
 
----
+**An autonomous, multi-agent AI pipeline that researches any company and scores it as a prospect for AI automation — in seconds.**
 
-## 📌 What It Does
+[![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
+[![LangGraph](https://img.shields.io/badge/LangGraph-Orchestration-1C3C3C?style=for-the-badge&logo=langchain&logoColor=white)](https://langchain-ai.github.io/langgraph/)
+[![LangChain](https://img.shields.io/badge/LangChain-Framework-1C3C3C?style=for-the-badge&logo=langchain&logoColor=white)](https://www.langchain.com/)
+[![Groq](https://img.shields.io/badge/Groq-LLaMA%203.1-F55036?style=for-the-badge&logo=groq&logoColor=white)](https://groq.com/)
+[![License](https://img.shields.io/badge/License-Private-red?style=for-the-badge)](LICENSE)
 
-Given just a **company name** and **website URL**, this system spins up a coordinated pipeline of specialized AI agents that each independently research a different dimension of the target company. Once all research is complete, a final **Decision Agent** synthesizes everything and returns a clear `HIGH_POTENTIAL / MEDIUM_POTENTIAL / LOW_POTENTIAL` verdict with supporting reasoning.
-
-**Example input:**
-```python
-"company_name": "Apollo Hospitals"
-"website":      "https://www.apollohospitals.com"
-```
-
-**Example output sections:**
-- Company profile & business model
-- Technology stack & digital maturity
-- Financial strength & investment capacity
-- Market trends & industry dynamics
-- Competitive landscape
-- AI automation opportunities (ranked by ROI & feasibility)
-- Final decision with confidence score, risks, and missing info
+</div>
 
 ---
 
-## 🧠 How It Works — Agent Pipeline
+## 📖 Overview
 
-The system is built with **LangGraph**, which orchestrates agents as nodes in a directed state graph.
+The **AI Business Intelligence Agent** is a production-grade, agentic pipeline designed for AI automation consultancies and sales teams. Feed it just a **company name** and a **website URL** — it autonomously deploys a coordinated swarm of specialized AI research agents, synthesizes their findings, and delivers a structured, confidence-scored intelligence report with a clear `HIGH / MEDIUM / LOW` verdict.
+
+No manual research. No guesswork. Just actionable intelligence.
+
+> **Powered by:** LangGraph (state-machine orchestration) · LangChain · Groq (LLaMA 3.1 8B Instant)
+
+---
+
+## ✨ Key Features
+
+| Feature | Description |
+|---|---|
+| 🧠 **Multi-Agent Architecture** | 9 specialized AI agents, each with a focused research mandate |
+| ⚡ **Parallel Execution** | 5 research agents run concurrently after initial analysis |
+| 🔒 **Structured Decision Output** | Pydantic-validated JSON — never hallucinated fields |
+| 🛡️ **Built-in Rate Limiter** | Thread-safe, 3-second interval guard on all LLM calls |
+| 📊 **Confidence Scoring** | Every decision comes with a 0–100 confidence percentage |
+| 🔄 **LangGraph State Graph** | Full stateful orchestration with conditional routing |
+| 🏗️ **Modular & Extensible** | Add new agents, tools, or export formats with minimal friction |
+
+---
+
+## 🧠 How It Works
+
+Given only a company name and URL, the system executes a **sequential + parallel** research pipeline:
 
 ```
 START
-  └─► initial_analysis
-        ├─► company_research ──┐
-        ├─► tech_analysis ─────┤
-        ├─► financial_analysis ┼─► automation_analysis ─► aggregate ─► decision ─► END
-        ├─► market_research ───┤
-        └─► competitor_analysis┘
+  │
+  ▼
+┌─────────────────────┐
+│   initial_analysis  │  ← Creates a starter profile to seed all research agents
+└─────────┬───────────┘
+          │
+  ┌───────┴────────────────────────────────────────────────────────┐
+  │               PARALLEL RESEARCH (runs concurrently)             │
+  ▼               ▼                  ▼             ▼               ▼
+company_research  tech_analysis  financial_analysis  market_research  competitor_analysis
+  │               │                  │             │               │
+  └───────┬───────┴──────────────────┴─────────────┴───────────────┘
+          │
+          ▼
+┌──────────────────────┐
+│  automation_analysis │  ← Synthesizes all research → identifies top AI opportunity
+└──────────┬───────────┘
+           │
+           ▼
+┌──────────────────────┐
+│       aggregate      │  ← Merges all findings into one structured state object
+└──────────┬───────────┘
+           │
+           ▼
+┌──────────────────────┐
+│    decision_agent    │  ← Issues HIGH / MEDIUM / LOW verdict + confidence score
+└──────────┬───────────┘
+           │  (conditional routing)
+           ▼
+┌──────────────────────┐
+│     final_report     │  ← Formats and surfaces the structured output
+└──────────┬───────────┘
+           │
+          END
 ```
 
-| Stage | Agent | What it does |
-|-------|-------|--------------|
-| 1 | **Initial Analysis** | Creates a short starter profile of the company to seed all other agents |
-| 2 (parallel) | **Company Research** | Full business profile — products, customers, model, pain points |
-| 2 (parallel) | **Tech Analysis** | Digital presence, tech stack, automation readiness |
-| 2 (parallel) | **Financial Analysis** | Business scale, investment capacity, potential ROI |
-| 2 (parallel) | **Market Research** | Industry trends, market demand, AI adoption landscape |
-| 2 (parallel) | **Competitor Analysis** | Competitor landscape, weaknesses, differentiation opportunities |
-| 3 | **Automation Analysis** | Synthesizes all parallel research → identifies the top AI automation opportunity |
-| 4 | **Aggregate** | Merges all findings into a single structured object |
-| 5 | **Decision Agent** | Issues a final `HIGH / MEDIUM / LOW` verdict with confidence score, reasons, risks |
+### Agent Breakdown
 
-> All 5 parallel research agents run **concurrently** after the initial analysis, making the pipeline fast and efficient.
+| # | Agent | Module | Responsibility |
+|---|-------|--------|----------------|
+| 1 | **Initial Analysis** | `nodes/initial_analysis.py` | Generates a short starter profile (name, type, what they do) to bootstrap all downstream agents |
+| 2a | **Company Research** | `nodes/company_research.py` | Full business profile — products, customers, model, key characteristics, and potential pain points |
+| 2b | **Tech Analysis** | `nodes/tech_analysis.py` | Website & digital presence, inferred tech stack, automation readiness, technical weaknesses |
+| 2c | **Financial Analysis** | `nodes/financial_analysis.py` | Business scale, revenue model, investment capacity, ROI potential, financial risks |
+| 2d | **Market Research** | `nodes/market_research.py` | Industry dynamics, market trends, AI adoption landscape, demand signals |
+| 2e | **Competitor Analysis** | `nodes/competitor_analysis.py` | Competitive landscape, differentiation gaps, tech advantage opportunities |
+| 3 | **Automation Analysis** | `nodes/automation_analysis.py` | Synthesizes all parallel research → surfaces the single highest-value AI automation opportunity |
+| 4 | **Aggregate** | `nodes/aggregate.py` | Merges all agent outputs into one clean, unified state dictionary |
+| 5 | **Decision Agent** | `nodes/decision.py` | Final verdict: `HIGH_POTENTIAL`, `MEDIUM_POTENTIAL`, or `LOW_POTENTIAL` with confidence score, reasons, risks, evidence, and missing info |
+
+> ⚡ **Agents 2a–2e run in parallel**, making the pipeline highly efficient even under a rate limiter.
 
 ---
 
 ## 🗂️ Project Structure
 
 ```
-new proj/
+ai-biz-intel/
 │
-├── main.py                    # Entry point — configure your company here and run
+├── main.py                      # Entry point — set your target company here
 │
 ├── graph/
-│   └── workflow.py            # LangGraph graph definition (nodes + edges)
+│   └── workflow.py              # LangGraph graph: nodes, edges, conditional routing
 │
 ├── nodes/
-│   ├── initial_analysis.py    # Agent 1 — starter profile
-│   ├── company_research.py    # Agent 2a — business profile
-│   ├── tech_analysis.py       # Agent 2b — technology analysis
-│   ├── financial_analysis.py  # Agent 2c — financial analysis
-│   ├── market_research.py     # Agent 2d — market research
-│   ├── competitor_analysis.py # Agent 2e — competitor analysis
-│   ├── automation_analysis.py # Agent 3 — AI opportunity synthesis
-│   ├── aggregate.py           # Agent 4 — findings aggregator
-│   ├── decision.py            # Agent 5 — final decision maker
-│   ├── human_approval.py      # (Planned) Human-in-the-loop approval node
-│   └── proposal.py            # (Planned) Proposal generation node
+│   ├── initial_analysis.py      # Agent 1  — starter company profile
+│   ├── company_research.py      # Agent 2a — business profile & pain points
+│   ├── tech_analysis.py         # Agent 2b — technology & digital maturity
+│   ├── financial_analysis.py    # Agent 2c — financial strength & ROI potential
+│   ├── market_research.py       # Agent 2d — market & industry dynamics
+│   ├── competitor_analysis.py   # Agent 2e — competitive landscape
+│   ├── automation_analysis.py   # Agent 3  — top AI opportunity synthesis
+│   ├── aggregate.py             # Agent 4  — findings aggregator
+│   ├── decision.py              # Agent 5  — final HIGH/MEDIUM/LOW decision
+│   └── final_report.py          # Formats and surfaces the structured final report
+│
+├── models/
+│   └── decision.py              # Pydantic model — validates the Decision Agent's output
 │
 ├── state/
-│   └── state.py               # Shared LangGraph state schema (DealState)
+│   └── state.py                 # LangGraph shared state schema (DealState TypedDict)
 │
 ├── config/
-│   └── llm.py                 # LLM config (Groq + rate limiter wrapper)
+│   └── llm.py                   # LLM config — Groq client + rate-limited wrapper
 │
 ├── utils/
-│   ├── rate_limiter.py        # Thread-safe rate limiter (3s between LLM calls)
-│   └── retry.py               # (Planned) Retry logic for LLM failures
+│   └── rate_limiter.py          # Thread-safe rate limiter (3s minimum between calls)
 │
-├── tools/
-│   ├── web_search.py          # (Planned) Live web search tool
-│   ├── website_scraper.py     # (Planned) Website scraper tool
-│   └── company_data.py        # (Planned) Structured company data fetcher
-│
-├── requirements.txt           # Python dependencies
-├── .env                       # API keys (not committed)
-└── .gitignore                 # Ignored files
+├── requirements.txt             # Python dependencies
+├── .env                         # API keys (never committed)
+└── .gitignore
 ```
 
 ---
 
 ## ⚙️ Tech Stack
 
-| Component | Technology |
-|-----------|-----------|
-| Language | Python 3.10+ |
-| Agent Orchestration | LangGraph |
-| LLM Framework | LangChain |
-| LLM Provider | Groq (`llama-3.1-8b-instant`) |
-| State Management | Python `TypedDict` via LangGraph `StateGraph` |
-| Rate Limiting | Custom thread-safe `RateLimiter` (3s intervals) |
-| Environment Config | `python-dotenv` |
+| Layer | Technology |
+|-------|------------|
+| **Language** | Python 3.10+ |
+| **Agent Orchestration** | [LangGraph](https://langchain-ai.github.io/langgraph/) — `StateGraph` with `START` / `END` / conditional edges |
+| **LLM Framework** | [LangChain](https://www.langchain.com/) — prompt composition and structured output |
+| **LLM Provider** | [Groq](https://groq.com/) — `llama-3.1-8b-instant` (ultra-fast inference) |
+| **Output Validation** | [Pydantic v2](https://docs.pydantic.dev/) — `DecisionResult` schema enforced on every run |
+| **State Management** | Python `TypedDict` — `DealState` passed through the entire graph |
+| **Rate Limiting** | Custom thread-safe `RateLimiter` — 3-second intervals, mutex-locked |
+| **Config Management** | `python-dotenv` — `.env`-based API key injection |
 
 ---
 
 ## 🚀 Getting Started
 
+### Prerequisites
+
+- Python **3.10 or higher**
+- A free [Groq API key](https://console.groq.com)
+
+---
+
 ### 1. Clone the repository
 
 ```bash
 git clone <your-repo-url>
-cd new-proj
+cd ai-biz-intel
 ```
 
 ### 2. Create and activate a virtual environment
@@ -131,7 +178,7 @@ python -m venv .venv
 # Windows
 .venv\Scripts\activate
 
-# macOS/Linux
+# macOS / Linux
 source .venv/bin/activate
 ```
 
@@ -141,7 +188,7 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### 4. Set up your API key
+### 4. Configure your API key
 
 Create a `.env` file in the project root:
 
@@ -149,21 +196,33 @@ Create a `.env` file in the project root:
 GROQ_API_KEY=your_groq_api_key_here
 ```
 
-> Get a free API key at https://console.groq.com
+> Get your free API key at [https://console.groq.com](https://console.groq.com)
 
-### 5. Configure your target company
+### 5. Set your target company
 
-Open `main.py` and update the initial state:
+Open `main.py` and update the `initial_state` dictionary:
 
 ```python
 initial_state = {
     "company_name": "Your Target Company",
-    "website": "https://www.yourcompany.com",
-    ...
+    "website":      "https://www.yourcompany.com",
+
+    # Leave the rest as-is — the agents populate these fields
+    "company_research":    {},
+    "tech_analysis":       {},
+    "financial_analysis":  {},
+    "market_research":     {},
+    "competitor_analysis": {},
+    "automation_analysis": {},
+    "aggregated_findings": {},
+    "decision":            {},
+    "proposal":            "",
+    "errors":              [],
+    "status":              "starting"
 }
 ```
 
-### 6. Run the agent
+### 6. Run
 
 ```bash
 python main.py
@@ -173,58 +232,130 @@ python main.py
 
 ## 📤 Sample Output
 
+The following is a representative output for **Apollo Hospitals**:
+
 ```
-===== COMPANY RESEARCH =====
-Apollo Hospitals is one of India's largest private healthcare groups...
+===== GRAPH COMPLETED =====
 
-===== TECH ANALYSIS =====
-The company maintains a well-developed digital presence with patient portals...
+===== FINAL REPORT =====
 
-===== FINANCIAL ANALYSIS =====
-Apollo Hospitals is a publicly listed company with strong revenue indicators...
+COMPANY:    Apollo Hospitals
+WEBSITE:    https://www.apollohospitals.com
 
-===== MARKET RESEARCH =====
-The Indian private healthcare sector is experiencing rapid growth...
+DECISION:   HIGH_POTENTIAL
+CONFIDENCE: 87%
 
-===== COMPETITOR ANALYSIS =====
-Key competitors include Fortis Healthcare, Max Healthcare, and Manipal...
+BEST OPPORTUNITY:
+AI-powered voice agent for patient appointment scheduling and triage
 
-===== AUTOMATION ANALYSIS =====
-Highest-potential opportunity: AI-powered patient appointment & triage agent...
-
-===== STATUS =====
-decision_complete
-
-===== FINAL DECISION =====
-DECISION: HIGH_POTENTIAL
-CONFIDENCE: 87
-BEST_OPPORTUNITY: AI voice agent for patient appointment scheduling and triage
 REASONS:
 - Large operational scale with high volume of repetitive patient interactions
 - Significant investment capacity as a listed healthcare group
-- Competitors are not yet known to have AI agent-driven patient engagement
+- Competitors are not yet known to deploy AI-agent-driven patient engagement at scale
+
 RISKS:
-- Healthcare regulation may slow AI deployment
-- Patient trust and data privacy are critical concerns
-MISSING_INFORMATION:
-- Internal CRM/EHR systems in use
-- Current call center volume and costs
+- Healthcare regulation in India may slow or constrain AI deployment
+- Patient trust and data privacy are critical concerns that must be addressed upfront
+- Integration with legacy EHR/HIS systems may be technically complex
+
+EVIDENCE:
+- Apollo Hospitals is publicly listed with documented multi-city operations
+- The company maintains patient-facing digital systems including app and portal
+- The Indian private healthcare market is undergoing significant digital transformation
+
+ASSUMPTIONS:
+- High call-center volume is assumed from the scale of operations, not confirmed
+- AI adoption budget is inferred from listed-company status, not from disclosed financials
+
+MISSING INFORMATION:
+- Current CRM / EHR systems in use
+- Existing call-center volume and associated costs
+- Internal IT roadmap and digital strategy priorities
+
+===== END OF REPORT =====
 ```
 
 ---
 
-## 🔮 Planned Features
+## 🔌 Decision Output Schema
 
-- [ ] `human_approval.py` — Human-in-the-loop gate before the final decision
-- [ ] `proposal.py` — Auto-generate a client-ready AI automation proposal
-- [ ] `tools/web_search.py` — Live web search to ground agents in real-time data
-- [ ] `tools/website_scraper.py` — Scrape the company website for deeper context
-- [ ] `tools/company_data.py` — Pull structured data from external company APIs
-- [ ] `utils/retry.py` — Graceful retry logic for LLM API failures
-- [ ] Export results to PDF or JSON report
+The `DecisionAgent` returns a Pydantic-validated object (`DecisionResult`) with the following guaranteed fields:
+
+```python
+class DecisionResult(BaseModel):
+    decision:            str        # "HIGH_POTENTIAL" | "MEDIUM_POTENTIAL" | "LOW_POTENTIAL"
+    confidence:          int        # 0–100 integer confidence score
+    best_opportunity:    str        # The single highest-value AI automation opportunity
+    reasons:             List[str]  # Why this verdict was reached
+    risks:               List[str]  # Risks that could block or reduce the opportunity
+    evidence:            List[str]  # Confirmed, factual supporting information
+    assumptions:         List[str]  # Inferred (not confirmed) conclusions
+    missing_information: List[str]  # Data gaps that would improve the decision quality
+```
+
+> All LLM output is validated by Pydantic before being written to state. Malformed responses raise a `ValidationError` — hallucinated or incomplete JSON is never silently accepted.
+
+---
+
+## 🛡️ Rate Limiter Design
+
+The `RateLimiter` in `utils/rate_limiter.py` is a **thread-safe** utility that enforces a minimum 3-second gap between any two consecutive LLM calls. This is critical for preventing Groq API rate-limit errors when the parallel research agents all call the LLM in rapid succession.
+
+```python
+class RateLimiter:
+    def __init__(self, min_interval=3):
+        self.lock = threading.Lock()   # Mutex ensures only one thread proceeds at a time
+        ...
+
+    def wait(self):
+        with self.lock:
+            elapsed = time.time() - self.last_request
+            if elapsed < self.min_interval:
+                time.sleep(self.min_interval - elapsed)
+            self.last_request = time.time()
+```
+
+Every LLM call — both `.invoke()` and `.with_structured_output().invoke()` — passes through this limiter automatically via the `RateLimitedLLM` wrapper in `config/llm.py`.
+
+---
+
+## 🔮 Roadmap
+
+The following features are planned for future iterations:
+
+- [ ] **`human_approval` node** — Human-in-the-loop gate inserted before the final decision; blocks execution until a human reviewer approves or rejects
+- [ ] **`proposal` node** — Auto-generates a polished, client-ready AI automation proposal document based on the decision output
+- [ ] **`tools/web_search.py`** — Live web search tool to ground agents in real-time, up-to-date company information
+- [ ] **`tools/website_scraper.py`** — Scrape the target company's website for richer context (pricing, team, case studies)
+- [ ] **`tools/company_data.py`** — Pull structured firmographic data from external APIs (e.g., Clearbit, Apollo.io)
+- [ ] **`utils/retry.py`** — Exponential backoff retry logic for transient LLM API failures
+- [ ] **Async execution** — Replace sequential LangGraph edges with true async parallel execution for maximum speed
+- [ ] **JSON / PDF export** — Export the final report as a structured JSON file or a formatted PDF
+
+---
+
+## 🤝 Contributing
+
+This project is currently **private**. Contributions are by invitation only.
+
+If you have been granted access and would like to contribute:
+
+1. Create a feature branch: `git checkout -b feature/your-feature-name`
+2. Make your changes with clear, focused commits
+3. Submit a pull request with a clear description of what was changed and why
 
 ---
 
 ## 📄 License
 
-This project is private. All rights reserved.
+This project is **proprietary and private**. All rights reserved.
+
+Unauthorized copying, distribution, or modification of this codebase — in whole or in part — is strictly prohibited.
+
+---
+
+<div align="center">
+
+Built with ❤️ using **LangGraph** · **LangChain** · **Groq**
+
+</div>

@@ -19,5 +19,16 @@ class RateLimitedLLM:
         rate_limiter.wait()
         return self.llm.invoke(prompt)
 
+    def with_structured_output(self, schema):
+        rate_limited_llm = self
+
+        class StructuredLLM:
+            def invoke(self, prompt):
+                rate_limiter.wait()
+                structured_model = rate_limited_llm.llm.with_structured_output(schema)
+                return structured_model.invoke(prompt)
+
+        return StructuredLLM()
+
 
 llm = RateLimitedLLM()

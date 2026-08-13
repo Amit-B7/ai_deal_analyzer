@@ -14,9 +14,7 @@ initial_state = {
 
     "aggregated_findings": {},
 
-    "decision": "",
-    "confidence": 0.0,
-    "missing_information": [],
+    "decision": {},
 
     "proposal": "",
 
@@ -24,29 +22,45 @@ initial_state = {
     "status": "starting"
 }
 
+
 graph = build_graph()
 
 result = graph.invoke(initial_state)
 
+
 print("\n===== GRAPH COMPLETED =====")
 
-print("\n===== COMPANY RESEARCH =====")
-print(result["company_research"])
+print("\n===== FINAL REPORT =====")
 
-print("\n===== TECH ANALYSIS =====")
-print(result["tech_analysis"])
+report = result["proposal"]
 
-print("\n===== FINANCIAL ANALYSIS =====")
-print(result["financial_analysis"])
+print(f"\nCOMPANY: {report['company']}")
+print(f"WEBSITE: {report['website']}")
 
-print("\n===== MARKET RESEARCH =====")
-print(result["market_research"])
+print(f"\nDECISION: {report['decision']}")
+print(f"CONFIDENCE: {report['confidence']}%")
 
-print("\n===== COMPETITOR ANALYSIS =====")
-print(result["competitor_analysis"])
+print(f"\nBEST OPPORTUNITY:")
+print(report["best_opportunity"])
 
-print("\n===== AUTOMATION ANALYSIS =====")
-print(result["automation_analysis"])
+print("\nREASONS:")
+for reason in report["reasons"]:
+    print(f"- {reason}")
 
-print("\n===== FINAL DECISION =====")
-print(result["decision"])
+print("\nRISKS:")
+for risk in report["risks"]:
+    print(f"- {risk}")
+
+print("\nEVIDENCE:")
+for evidence in report["evidence"]:
+    print(f"- {evidence}")
+
+print("\nASSUMPTIONS:")
+for assumption in report["assumptions"]:
+    print(f"- {assumption}")
+
+print("\nMISSING INFORMATION:")
+for info in report["missing_information"]:
+    print(f"- {info}")
+
+print("\n===== END OF REPORT =====")

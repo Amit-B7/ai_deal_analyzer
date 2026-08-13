@@ -1,6 +1,7 @@
 from typing import Dict, Any
 
 from config.llm import llm
+from models.decision import DecisionResult
 
 
 def limit_text(text: str, max_chars: int = 2500) -> str:
@@ -36,8 +37,7 @@ def decision_agent(state: Dict[str, Any]) -> Dict[str, Any]:
     prompt = f"""
 You are the final Decision Agent in an AI business intelligence system.
 
-Determine whether this company is a good prospect for an
-AI automation company.
+Determine whether this company is a good prospect for an AI automation company.
 
 COMPANY RESEARCH:
 {company}
@@ -74,30 +74,44 @@ IMPORTANT:
 - Do NOT invent ROI percentages.
 - Clearly distinguish facts from assumptions.
 - Base the decision only on the provided research.
+- Put factual supporting information in evidence.
+- Put uncertain conclusions in assumptions.
 
-Return:
+Return ONLY valid JSON.
 
-DECISION: HIGH_POTENTIAL / MEDIUM_POTENTIAL / LOW_POTENTIAL
-CONFIDENCE: number from 0 to 100
-BEST_OPPORTUNITY: one sentence
+Do NOT use markdown.
+Do NOT use ```json.
+Do NOT add explanations outside the JSON.
 
-REASONS:
-- reason 1
-- reason 2
-- reason 3
+The JSON MUST contain exactly these fields:
 
-RISKS:
-- risk 1
-- risk 2
+{{
+    "decision": "HIGH_POTENTIAL",
+    "confidence": 80,
+    "best_opportunity": "string",
+    "reasons": ["string"],
+    "risks": ["string"],
+    "evidence": ["string"],
+    "assumptions": ["string"],
+    "missing_information": ["string"]
+}}
 
-MISSING_INFORMATION:
-- information 1
-- information 2
+The decision must be one of:
+"HIGH_POTENTIAL"
+"MEDIUM_POTENTIAL"
+"LOW_POTENTIAL"
+
+Confidence must be an integer from 0 to 100.
+All list fields must contain strings.
 """
 
+    # Normal Groq request — keeps our rate limiter
     response = llm.invoke(prompt)
 
+    # Validate Groq's JSON using Pydantic
+    decision = DecisionResult.model_validate_json(response.content)
+
     return {
-        "decision": response.content,
+        "decision": decision.model_dump(),
         "status": "decision_complete"
     }
