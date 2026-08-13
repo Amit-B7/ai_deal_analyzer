@@ -24,11 +24,9 @@ initial_state = {
     "status": "starting"
 }
 
-
 graph = build_graph()
 
 result = graph.invoke(initial_state)
-
 
 print("\n===== GRAPH COMPLETED =====")
 
@@ -49,9 +47,6 @@ print(result["competitor_analysis"])
 
 print("\n===== AUTOMATION ANALYSIS =====")
 print(result["automation_analysis"])
-
-print("\n===== STATUS =====")
-print(result["status"])
 
 print("\n===== FINAL DECISION =====")
 print(result["decision"])
