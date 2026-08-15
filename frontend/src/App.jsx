@@ -57,7 +57,8 @@ function App() {
     setError("");
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/analyze", {
+      const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
+      const response = await fetch(`${API_URL}/analyze`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
