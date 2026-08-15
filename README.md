@@ -12,6 +12,14 @@
 
 </div>
 
+<div align="center">
+
+### ⚡ Powered by Groq — 100% Free, No API Costs
+
+> 🆓 This entire project runs on **Groq's free API tier** — no credit card, no billing, no hidden charges. Clone it, run it, and analyze companies at **absolutely zero cost**.
+
+</div>
+
 ---
 
 ## 📖 Overview
