@@ -413,7 +413,7 @@ function App() {
                 </div>
 
                 <a
-                  href={website}
+                  href={website && !/^https?:\/\//i.test(website) ? `https://${website}` : website}
                   target="_blank"
                   rel="noreferrer"
                 >
