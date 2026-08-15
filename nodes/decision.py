@@ -77,6 +77,13 @@ IMPORTANT:
 - Put factual supporting information in evidence.
 - Put uncertain conclusions in assumptions.
 
+For the confidence score, calculate an integer from 0 to 100 based on:
+- Amount of concrete evidence available (more verified facts = higher confidence)
+- Consistency of signals across all 6 research areas
+- Number of unknowns or missing data points (more gaps = lower confidence)
+- Strength and clarity of the automation opportunity identified
+Do NOT default to 80. The score must reflect the actual quality and completeness of the research for THIS specific company.
+
 Return ONLY valid JSON.
 
 Do NOT use markdown.
@@ -86,14 +93,14 @@ Do NOT add explanations outside the JSON.
 The JSON MUST contain exactly these fields:
 
 {{
-    "decision": "HIGH_POTENTIAL",
-    "confidence": 80,
-    "best_opportunity": "string",
-    "reasons": ["string"],
-    "risks": ["string"],
-    "evidence": ["string"],
-    "assumptions": ["string"],
-    "missing_information": ["string"]
+    "decision": "HIGH_POTENTIAL | MEDIUM_POTENTIAL | LOW_POTENTIAL",
+    "confidence": <integer 0-100 calculated from the research above>,
+    "best_opportunity": "<specific opportunity identified>",
+    "reasons": ["<reason 1>", "<reason 2>"],
+    "risks": ["<risk 1>", "<risk 2>"],
+    "evidence": ["<fact 1>", "<fact 2>"],
+    "assumptions": ["<assumption 1>"],
+    "missing_information": ["<gap 1>"]
 }}
 
 The decision must be one of:
